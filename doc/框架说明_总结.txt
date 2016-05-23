@@ -1,0 +1,155 @@
+项目目标：
+  1.创建的jdbc web项目，有必要减少Servlet的数量，将某类业务交给Controller来处理，让Controller
+调用Service的相关方法，并将返回值放入Request或Response中。
+  2.Service不是通过new方式来创建的，而是通过一种名为“依赖注入”的方式，让框架为我们来创建所需要的对象
+	
+将会掌握技能：
+  1.加载并读取配置文件
+  2.实现一个简单的IOC容器（控制反转）
+  3.加载指定的类
+  4.初始化框架
+  
+项目应用技能及需要依赖：	
+  1.SLF4J日志框架，实际上是日志框架的接口，而Log4j只是日志框架的一种实现而已
+  2.JSON序列化工具，Jackson序列化工具，是在性能、稳定性方面表现较好的JSON序列化工具
+  3.常用的工具类，Apache Commons：commons-lang4和commons-collections4
+  4.jdbc类库：DbUtils
+  5.获取类加载器，只需要获得当前线程中的ClassLoader即可：Thread.currentThread().
+getContextClassLoader();
+  6.注解类的配置
+  7.不是开发者自己通过new的方式来实例化，而是通过框架自身来实例化，像这类的实例化过程，就称为IOC
+  8.一般也将IOC称为DI（依赖注入）
+    
+  
+src/main/resources
+	smart.properties的文件    
+	
+pom.xml：
+	<!-- Servlet -->
+	<groupId>javax.servlet</groupId>
+	<artifactId>javax.servlet-api</artifactId>
+	<!-- JSP -->
+	<groupId>javax.servlet.jsp</groupId>
+	<artifactId>javax.servlet-api</artifactId>	
+	<!-- JSTL -->
+	<groupId>javax.servlet</groupId>
+	<artifactId>jstl</artifactId>
+	<!-- SLF4J 日志框架接口 -->
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j-log4j12</artifactId>
+	<!-- MySQL mysql的java驱动程序 -->
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>	
+	<!-- Jackson json序列化工具 -->
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-databind</artifactId>
+	<!-- Apache Commons Lang 封装常用工具类 -->
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-lang4</artifactId>
+	<!-- Apache Commons Collections 封装常用工具类 -->
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-collections4</artifactId>
+	<!-- Apache Commons DbUtils jdbc类库 -->
+	<groupId>commons-dbutils</groupId>
+	<artifactId>commons-dbutils</artifactId>
+	<!-- Apache DBCP 数据连接池 -->
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-dbcp2</artifactId>
+	
+	<!--  -->
+	<groupId></groupId>
+	<artifactId></artifactId>
+
+项目的搭建：
+    项目名:smart-framework
+    包名：org.smart4j.smartFramework
+  jsp的基础路径：/WEB-INF/view
+    静态资源文件的基础路径：/asset/
+    根据配置项的名称来获取配置项的取值，这是框架需要做的事情：
+    org.smart4j.smartFramework    		
+    			interface ConfigConstant常量接口，来维护配置文件中相关的配置项名称
+    		初始化框架，当我们创建了ClassHelper、BeanHelper、IocHelper、ControllerHelper，
+    		这四个Helper类需要通过一个入口程序来加载它们，实际上是加载它们的静态块
+    			final class HelperLoader类，加载相应的Helper类
+    		MVC框架中最核心的DispatcherServlet类
+    			class DispatcherServlet extends HttpServletl
+    org.smart4j.smartFramework.helper	
+    			final class ConfigHelper类，获取smart.properties配置文件中的配置项
+			我们可以将Controller注解与Service注解的类所产生的对行，理解为由Smart框架所管理的Bean
+    			final class ClassHelper类，获取应用包名下的所有Bean类的方法
+			获取所有被Smart框架管理的Bean类，需要调用ClassHelper类的getBeanClassSet方法，随后需
+			要循环调用ReflectionUtil类的newInstance方法，根据类来实例化对象，最后将每次创建的对象存
+			放在一个静态的Map<Class<?>,Object>中    			
+				final class BeanHelper类，通过该Map的key（类名）去获取所对应的value（Bean对象）
+    		通过BeanHelper获取所有BeanMap（是一个Map<Class<?>,Object> 结构，记录了类与对象的关
+    		系），遍历这个映射关系，取出Bean类与Bean实例，进而通过反射获取类中所有的成员变量。继续遍历成员
+    		变量，判断成员变量是否带有Inject注解，若带有注解，则从Bean Map中根据Bean类取出Bean实例，
+    		最后通过ReflectionUtil#setField方法来修改当前成员变量的值
+				final class IocHelper类，依赖注入的实现
+			加载ControllerHelper类，让它去处理以下逻辑：
+				获取所有定义了Controller注解的类--->通过反射获取该类的所有带有Action注解的方法--->
+				获取Action注解中的请求表达式进而获取请求方法与请求路径--->封装一个请求对象（Request）与
+				处理对象（Handler）--->将Request于Handler建立映射关系（放入Action Map中）--->根
+				据请求方法与请求路径获取处理对象s的方法    
+				final class ControllerHelper类,用于存放请求与处理器的映射关系（简称Action Map）    		
+    org.smart4j.smartFramework.util   	
+    			final class ClassUtil类，加载基础包名下的所有类，比如使用了某注解的类或者继承了某父类的类
+    		使用ClassHelper类可以获取所加载的类，但无法通过类来实例化对象，因此需要提供反射工具类，让它封装反射
+    		相关的API
+    			final class ReflectionUtil类，反射工具类，封装反射相关的API
+    			final class ArrayUtil类，对数组的一些常用方法的封装
+				final class StreamUtil类，流操作工具类
+				final class CodecUtil类，编码与解码操作工具类
+				final class PropsUtil类，编写一个类用来读取属性文件
+				final class CastUtil类，转型操作工具类
+				final class StringUtil类， 字符串工具类
+				final class JsonUtil类，JSON工具类    								
+    		在控制器类上使用Controller注解，在控制器类的方法上使用Action注解，在服务类上使用Service注解，在
+    		控制器类可使用Inject注解将服务类依赖注入进来
+    org.smart4j.smartFramework.annotation	
+    			@interface Controller
+    			@interface Action
+    			@interface Service
+    			@interface Inject
+	org.smart4j.smartFramework.bean
+				class Request类，封装请求信息
+				class Handler类，封装Action信息
+			从HttpServletRequest对象中获取所有的请求参数，并将其初始化到一个名为Param对象中
+				class Param类，请求参数对象
+			从Handler对象中获取Action的方法返回值，该返回值是View，返回jsp页面，是Data，返回JSON数据
+				class View类，返回视图对象
+				class Data类，返回数据对象，返回的Data类型的数据封装了一个Object类型的模型数据，框架会将该对
+				象写入HttpServletResponse对象中，从而直接输出至浏览器
+			请求转发控制器，现在需要编写一个Servlet，让它来处理所有的请求		
+项目总结：
+  1.通过DispatcherServlet来处理所有的请求--->根据请求信息从ControllerHelper中获取对应的Action方法--->
+使用反射技术调用Action方法，同时传入具体的参数--->拿到返回值并判断返回值的类型，进行相应的处理
+  2.搭建了一个简单的MVC框架---定义了一系列注解---通过一系列的Helper类来初始化MVC框架---通过DispatcherServlet
+来处理所有的请求---根据请求方法与请求路径来调用具体的Action方法---判断Action方法的返回值，为View类型，跳转JSP，为
+Data类型，返回JSON数据
+  3.未实现AOP（面向方面编程），可以通过AOP实现性能分析、日志收集、安全控制等
+  
+  
+实现加载配置项：
+	smart.properties配置文件
+	interface ConfigConstant常量接口，来维护配置文件中相关的配置项名称
+	final class ConfigHelper类，封装获取smart.properties配置文件中的配置项
+	final class PropsUtil类，用来读取属性文件的工具类
+	final class CastUtil类，转型操作的工具类
+	final class StringUtil类，字符串工具类
+	1.需要配置文件
+	2.将我们需要的属性名封装到一个接口中，其目的主要是封装
+	3.为了达到可复用的目的，我们需要有一个Properties的对象
+	4.通过传入Properties对象，和属性名，获得Properties中的属性值
+	5.可能需要类型转换，所以需要封装类型转换的类和String的工具类
+	  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    																				
