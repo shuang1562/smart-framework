@@ -131,10 +131,10 @@ Data类型，返回JSON数据
   
   
 实现加载配置项：
-	smart.properties配置文件
+  smart.properties配置文件
 	interface ConfigConstant常量接口，来维护配置文件中相关的配置项名称
 	final class ConfigHelper类，封装获取smart.properties配置文件中的配置项
-	final class PropsUtil类，用来读取属性文件的工具类
+	final class PropsUtil类，用来 读取属性文件的工具类
 	final class CastUtil类，转型操作的工具类
 	final class StringUtil类，字符串工具类
 	1.需要配置文件
@@ -142,7 +142,14 @@ Data类型，返回JSON数据
 	3.为了达到可复用的目的，我们需要有一个Properties的对象
 	4.通过传入Properties对象，和属性名，获得Properties中的属性值
 	5.可能需要类型转换，所以需要封装类型转换的类和String的工具类
-	  
+    开发一个类加载器：加载该基础包名下的所有类，比如使用了某注解或者实现了某接口的类，再或者继承了某父类的所有子类等	
+	final class ClassUtil类，是一个类操作工具类
+	1.需要一个类加载器，根据给定路径加载类：getClassLoader()
+	2.获取路径下的所有文件路径，把它的路径给拆分出来，因为通过getClassLoader()获得到的路径是有协议的，需要我们
+	    进行整理：getClassSet(String packageName)
+	3.拆分之后是判断路径下的那个文件是否是标准文件，区分标准文件和目录和.class文件：
+	  addClass(Set<Class<?>> classSet, String packagePath, String packageName)
+	4.对于标准的类，是可以通过类加载器进行加载的：doAddClass(Set<Class<?>> classSet, String className)
   
   
   
