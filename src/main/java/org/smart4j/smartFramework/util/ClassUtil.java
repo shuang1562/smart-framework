@@ -49,6 +49,7 @@ public final class ClassUtil {
 	 * @return
 	 */
 	public static Set<Class<?>> getClassSet(String packageName) {
+		// 存放Class类的Set集合
 		Set<Class<?>> classSet = new HashSet<Class<?>>();
 		try {
 			// getResource(String name) 查找具有给定名称的资源
@@ -86,7 +87,7 @@ public final class ClassUtil {
 		return classSet;
 	}
 	/**
-	 * 递归遍历类文件，判断是否是.class文件或者标准文件
+	 * 递归遍历类或文件，判断是否是.class文件或者标准文件
 	 * @param classSet
 	 * @param packagePath
 	 * @param packageName
@@ -119,8 +120,8 @@ public final class ClassUtil {
 	}
 	/**
 	 * 将类放入 Set<Class<?>> 中
-	 * @param classSet
-	 * @param className
+	 * @param classSet 存放Class类的Set集合
+	 * @param className 类名
 	 */
 	public static void doAddClass(Set<Class<?>> classSet, String className) {
 		Class<?> cls = loadClass(className, false);

@@ -131,7 +131,7 @@ Data类型，返回JSON数据
   
   
 实现加载配置项：
-  smart.properties配置文件
+   一、smart.properties配置文件
 	interface ConfigConstant常量接口，来维护配置文件中相关的配置项名称
 	final class ConfigHelper类，封装获取smart.properties配置文件中的配置项
 	final class PropsUtil类，用来 读取属性文件的工具类
@@ -142,7 +142,7 @@ Data类型，返回JSON数据
 	3.为了达到可复用的目的，我们需要有一个Properties的对象
 	4.通过传入Properties对象，和属性名，获得Properties中的属性值
 	5.可能需要类型转换，所以需要封装类型转换的类和String的工具类
-    开发一个类加载器：加载该基础包名下的所有类，比如使用了某注解或者实现了某接口的类，再或者继承了某父类的所有子类等	
+   二、开发一个类加载器：加载该基础包名下的所有类，比如使用了某注解或者实现了某接口的类，再或者继承了某父类的所有子类等	
 	final class ClassUtil类，是一个类操作工具类
 	1.需要一个类加载器，根据给定路径加载类：getClassLoader()
 	2.获取路径下的所有文件路径，把它的路径给拆分出来，因为通过getClassLoader()获得到的路径是有协议的，需要我们
@@ -150,6 +150,18 @@ Data类型，返回JSON数据
 	3.拆分之后是判断路径下的那个文件是否是标准文件，区分标准文件和目录和.class文件：
 	  addClass(Set<Class<?>> classSet, String packagePath, String packageName)
 	4.对于标准的类，是可以通过类加载器进行加载的：doAddClass(Set<Class<?>> classSet, String className)
+   三、 我们的目标是在控制器类上使用Controller注解，在控制器类的方法上使用Action注解，在服务类上使用Service注解，在
+   控制器中可以使用Inject注解将服务类依赖注入进来，因此定义了四个注解类
+	@interface Controller    控制器注解
+    @interface Action        Action方法注解
+    @interface Service       Service注解
+    @interface Inject        Inject注解
+   四、ClassUtil加载的类都需要基于配置文件（smart.properties）加载，所以需要开发一个类，让它分别获得应用包名下的所
+   有类、应用包名下所有Service类、应用包名下所有Controller类。所有带有Controller注解与Service注解的类所产生的对
+   象，理解为由Smart框架所管理的Bean，所以还需要有一个获取应用中的所有Bean类的方法
+   final class ClassHelper   所有类其实在经过编译后是存放在，WEB-INF下的，然后我们获取这个下面的所有的类，判
+        断类的注解，是什么样的注解（Controller、Service），然后将其放入相对应的集合中
+   
   
   
   
@@ -157,6 +169,15 @@ Data类型，返回JSON数据
   
   
   
-  
-  
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
     																				
