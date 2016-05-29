@@ -30,7 +30,8 @@ public final class ClassUtil {
 	 * 任何对象都是Class类的实例
 	 * 
 	 * @param className 类名
-	 * @param isInitialized 是否初始化  是否执行类的静态代码块
+	 * @param isInitialized 是否初始化  是否执行类的静态代码块,为了提高加载类的性能，
+	 * 						可将loadClass方法的isInitialized的参数设置为false
 	 * @return
 	 */
 	public static Class<?> loadClass(String className, boolean isInitialized) {

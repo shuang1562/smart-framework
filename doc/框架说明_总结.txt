@@ -103,7 +103,8 @@ pom.xml：
 				final class PropsUtil类，编写一个类用来读取属性文件
 				final class CastUtil类，转型操作工具类
 				final class StringUtil类， 字符串工具类
-				final class JsonUtil类，JSON工具类    								
+				final class JsonUtil类，JSON工具类    
+				CollectionUtil								
     		在控制器类上使用Controller注解，在控制器类的方法上使用Action注解，在服务类上使用Service注解，在
     		控制器类可使用Inject注解将服务类依赖注入进来
     org.smart4j.smartFramework.annotation	
@@ -161,7 +162,7 @@ Data类型，返回JSON数据
    象，理解为由Smart框架所管理的Bean，所以还需要有一个获取应用中的所有Bean类的方法
    final class ClassHelper   所有类其实在经过编译后是存放在，WEB-INF下的，然后我们获取这个下面的所有的类，判
         断类的注解，是什么样的注解（Controller、Service），然后将其放入相对应的集合中
-   
+  五、   
   
   
   
