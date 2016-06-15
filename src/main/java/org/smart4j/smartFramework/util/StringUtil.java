@@ -28,4 +28,13 @@ public final class StringUtil {
 	public static boolean isNotEmpty(String str) {
 		return !isEmpty(str);
 	}
+	/**
+	 * 按照指定字符分割字符串
+	 * @param str
+	 * @param splitStr
+	 * @return
+	 */
+	public static String[] splitString(String str, String splitStr) {
+		return str.split(splitStr);
+	}
 }

@@ -162,9 +162,18 @@ Data类型，返回JSON数据
    象，理解为由Smart框架所管理的Bean，所以还需要有一个获取应用中的所有Bean类的方法
    final class ClassHelper   所有类其实在经过编译后是存放在，WEB-INF下的，然后我们获取这个下面的所有的类，判
         断类的注解，是什么样的注解（Controller、Service），然后将其放入相对应的集合中
-  五、   
-  
-  
+  五、通过反射获取请求方法与请求路径，封装一个请求对象（Request）与处理对象（Handler），将Request与Handler建立一
+    个映射关系，放入一个Action Map中，并提供一个可根据请求方法与请求路径获取处理对象的方法
+    class Request类，封装请求信息。里面有String requestMethod（请求方法）和String requestPath（请求路
+    径）
+    class Handler类，封装Action信息。里面有Class<?> controllerClass和Method actionMethod属性
+    class ControllerHelper类，获得所有带Action注解的类，然后获得里面的方法。将方法和请求路径分别放入到
+  Request类和Handler类中。ControllerHelper中封装的Action Map，通过它来存放Request与Handler之间的映射
+    关系。通过ClassHelper获取所有带有Controller注解的类，接着遍历Controller类，从Action中提取URL，最后初始化
+  Request与Handler之间的映射关系
+  	final class HelperLoader类，是一个入口程序，用来初始化ClassHelper、BeanHelper、IocHelper、
+  ControllerHelper这四个类的
+六、  
   
   
   
