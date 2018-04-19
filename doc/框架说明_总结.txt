@@ -1,4 +1,4 @@
-项目目标11：
+项目目标1122：
   1.创建的jdbc web项目，有必要减少Servlet的数量，将某类业务交给Controller来处理，让Controller
 调用Service的相关方法，并将返回值放入Request或Response中。
   2.Service不是通过new方式来创建的，而是通过一种名为“依赖注入”的方式，让框架为我们来创建所需要的对象
